@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - JWT_SECRET_KEY=yoursecretjwtkeychangedinproduction
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-} # Pulls from your host environment if set
+      - DATABASE_URL=sqlite:///./news_bias.db
+    volumes:
+      - sqlite_data:/app
+    restart: always
+
+volumes:
+  sqlite_data:
