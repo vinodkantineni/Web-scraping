@@ -30,10 +30,25 @@ export default function DashboardPage() {
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.detail || 'Analysis failed. Please verify the URL or text input.');
+        if (response.status === 502 || response.status === 503 || response.status === 504) {
+          throw new Error('Server timeout or memory limit reached. The AI models require at least 4GB of RAM to run.');
+        }
+        
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch {
+          throw new Error(`Server error (${response.status}). Please try again later.`);
+        }
+        throw new Error(errorData.detail || 'Analysis failed. Please verify the URL or text input.');
+      }
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error('Received an invalid or empty response from the server.');
       }
 
       setResult(data);
