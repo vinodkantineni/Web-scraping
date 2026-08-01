@@ -32,7 +32,7 @@ export default function DashboardPage() {
 
       if (!response.ok) {
         if (response.status === 502 || response.status === 503 || response.status === 504) {
-          throw new Error('Server timeout or memory limit reached. The AI models require at least 4GB of RAM to run.');
+          throw new Error('Server timeout or unavailable. Please try again later.');
         }
         
         let errorData;

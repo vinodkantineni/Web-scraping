@@ -64,7 +64,7 @@ Render is one of the easiest platforms to deploy containerized single-port web a
    - **Name**: `news-bias-digest`
    - **Runtime**: Select **Docker** (Render will automatically detect the root `Dockerfile` and run the multi-stage build).
    - **Region**: Choose a region closest to your users.
-   - **Instance Type**: **At least 4GB of RAM is required** to load the local HuggingFace AI models without OOM crashes. Free tier will NOT work. Choose a Standard or Pro instance.
+   - **Instance Type**: Free tier is sufficient, but 512MB RAM is recommended.
 4. **Environment Variables**:
    Under the **Environment** tab, click **Add Environment Variable** and define:
    - `GEMINI_API_KEY` = *(Your Google AI Studio API key)*
@@ -99,8 +99,6 @@ GCP Cloud Run provides a serverless platform to run containers at scale.
      --platform managed \
      --region us-central1 \
      --allow-unauthenticated \
-     --memory 4Gi \
-     --cpu 2 \
      --set-env-vars="JWT_SECRET_KEY=your_secret_key" \
      --set-env-vars="GEMINI_API_KEY=your_gemini_api_key"
    ```
