@@ -40,7 +40,7 @@ app.include_router(analysis.router)
 # Root status endpoint
 @app.get("/api/health")
 def health_check():
-    return {"status": "healthy", "mode": "Gemini API" if os.getenv("GEMINI_API_KEY") else "Local BART models"}
+    return {"status": "healthy", "mode": "Local BART models (HuggingFace)"}
 
 # Serve frontend static files in production
 # The React build output directory (frontend/dist) is copied/built under a path served by FastAPI

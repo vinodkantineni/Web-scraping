@@ -10,8 +10,6 @@ lxml_html_clean==0.1.1
 nltk==3.8.1
 bcrypt==4.1.2
 
-# --- Optional Local BART Model Dependencies ---
-# Only uncomment if you plan to run BART models locally instead of using Gemini API.
-# Note: These are very large and may exceed memory limits on free hostings (e.g. Render, Railway).
-# torch==2.2.1
-# transformers==4.38.2
+# --- Local BART Model Dependencies (Required) ---
+torch==2.2.1
+transformers==4.38.2
