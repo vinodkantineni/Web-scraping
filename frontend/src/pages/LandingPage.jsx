@@ -40,7 +40,7 @@ export default function LandingPage() {
             Get Started Free
             <ArrowRight size={18} />
           </Link>
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ fontSize: '1.1rem', padding: '14px 32px' }}>
+          <a href="https://github.com/vinodkantineni/Web-scraping" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ fontSize: '1.1rem', padding: '14px 32px' }}>
             View GitHub Documentation
           </a>
         </div>
