@@ -14,7 +14,8 @@
 
 
 ### Analysis Input
-![Dashboard Input Placeholder](https://placehold.co/800x400/1a1a2e/ffffff?text=Dashboard+Input+Screenshot)
+<img width="1101" height="570" alt="image" src="https://github.com/user-attachments/assets/6c574233-cfe9-41c6-b57e-a1b5d7e43d44" />
+
 
 ### Bias Detection Results & Chart
 ![Analysis Results Placeholder](https://placehold.co/800x400/1a1a2e/ffffff?text=Analysis+Results+Screenshot)
