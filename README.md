@@ -18,7 +18,10 @@
 
 
 ### Bias Detection Results & Chart
-![Analysis Results Placeholder](https://placehold.co/800x400/1a1a2e/ffffff?text=Analysis+Results+Screenshot)
+<img width="1001" height="727" alt="image" src="https://github.com/user-attachments/assets/cdb03c5a-8cb9-4c33-9aba-163b66680101" />
+<img width="968" height="471" alt="image" src="https://github.com/user-attachments/assets/74bc81ce-2f2a-4910-a301-e374f7bdc28c" />
+
+
 
 ## ✨ Features
 * **Interactive Dashboard**: Paste an article URL or raw text to instantly analyze news content.
