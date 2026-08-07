@@ -3,6 +3,13 @@ import json
 from typing import Optional
 from newspaper import Article
 import google.generativeai as genai
+from dotenv import load_dotenv
+
+# Automatically load environment variables from .env files
+load_dotenv()
+backend_env = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
+if os.path.exists(backend_env):
+    load_dotenv(backend_env)
 
 def extract_article(url: str) -> tuple:
     """Download and extract title and text from URL."""
@@ -28,14 +35,33 @@ def analyze_article(url: Optional[str] = None, raw_text: Optional[str] = None) -
     if not text or len(text.strip()) < 150:
         raise ValueError("Article content must be at least 150 characters long.")
 
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY environment variable is not set. Please set it in your .env or deployment console.")
 
     genai.configure(api_key=api_key)
     
-    # Use flash for fast text tasks
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # Preferred Gemini models in fallback order
+    candidate_models = [
+        'gemini-1.5-flash',
+        'gemini-1.5-flash-latest',
+        'gemini-2.0-flash',
+        'gemini-2.5-flash',
+        'gemini-1.5-pro',
+        'gemini-pro'
+    ]
+
+    # Query supported generation models to prioritize models available for this API key
+    try:
+        supported = [
+            m.name.replace("models/", "")
+            for m in genai.list_models()
+            if "generateContent" in getattr(m, "supported_generation_methods", [])
+        ]
+        if supported:
+            candidate_models = [m for m in candidate_models if m in supported] + [m for m in supported if m not in candidate_models]
+    except Exception as list_err:
+        print(f"Note: Could not retrieve dynamic model list ({list_err}), using default candidate list.")
 
     prompt = f"""
 You are an expert, objective political analyst and editor.
@@ -64,20 +90,40 @@ Return the response STRICTLY as a valid JSON object with the following schema:
 Article text:
 {text[:4000]}
 """
-    print("Analyzing with Gemini API...")
+    response_text = None
+    last_error = None
+
+    for model_name in candidate_models:
+        try:
+            print(f"Analyzing with Gemini API model '{model_name}'...")
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(prompt)
+            if response and hasattr(response, "text") and response.text:
+                response_text = response.text.strip()
+                print(f"Successfully generated analysis using model '{model_name}'.")
+                break
+        except Exception as err:
+            last_error = err
+            print(f"Model '{model_name}' failed: {err}")
+            continue
+
+    if not response_text:
+        raise ValueError(f"Failed to process analysis with Gemini: {str(last_error)}")
+
+    # Clean markdown formatting if present
+    if response_text.startswith("```json"):
+        response_text = response_text[7:]
+    elif response_text.startswith("```"):
+        response_text = response_text[3:]
+    if response_text.endswith("```"):
+        response_text = response_text[:-3]
+    response_text = response_text.strip()
+
     try:
-        response = model.generate_content(prompt)
-        response_text = response.text.strip()
-        
-        # Clean markdown formatting if present
-        if response_text.startswith("```json"):
-            response_text = response_text[7:]
-        if response_text.endswith("```"):
-            response_text = response_text[:-3]
-            
         data = json.loads(response_text)
-    except Exception as e:
-        raise ValueError(f"Failed to process analysis with Gemini: {str(e)}")
+    except Exception as parse_err:
+        raise ValueError(f"Failed to parse JSON output from Gemini API: {str(parse_err)}")
+
 
     original_left = data["original_bias"]["left"]
     original_center = data["original_bias"]["center"]
