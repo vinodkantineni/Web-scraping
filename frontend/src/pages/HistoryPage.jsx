@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Trash2, Calendar, ChevronDown, ChevronUp, Link2, AlertTriangle, ShieldCheck } from 'lucide-react';
 import BiasChart from '../components/BiasChart';
 
-export default function HistoryPage() {
+export default function HistoryPage({ onUnauthorized }) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,6 +25,14 @@ export default function HistoryPage() {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          if (onUnauthorized) {
+            onUnauthorized();
+          } else {
+            localStorage.removeItem('token');
+          }
+          throw new Error('Your session has expired. Please log in again.');
+        }
         throw new Error('Failed to load search history.');
       }
 
@@ -51,6 +59,14 @@ export default function HistoryPage() {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          if (onUnauthorized) {
+            onUnauthorized();
+          } else {
+            localStorage.removeItem('token');
+          }
+          throw new Error('Your session has expired. Please log in again.');
+        }
         throw new Error('Failed to delete history item.');
       }
 

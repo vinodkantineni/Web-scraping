@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Sparkles, Globe, FileText, ArrowRight, ShieldAlert, BadgeInfo } from 'lucide-react';
 import BiasChart from '../components/BiasChart';
 
-export default function DashboardPage() {
+export default function DashboardPage({ onUnauthorized }) {
   const [url, setUrl] = useState('');
   const [text, setText] = useState('');
   const [inputType, setInputType] = useState('url'); // 'url' or 'text'
@@ -31,6 +31,15 @@ export default function DashboardPage() {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          if (onUnauthorized) {
+            onUnauthorized();
+          } else {
+            localStorage.removeItem('token');
+          }
+          throw new Error('Your session has expired or is invalid. Please log in again to continue.');
+        }
+
         if (response.status === 502 || response.status === 503 || response.status === 504) {
           throw new Error('Server timeout or unavailable. Please try again later.');
         }

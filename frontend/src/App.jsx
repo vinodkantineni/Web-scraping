@@ -99,12 +99,12 @@ export default function App() {
             
             <Route 
               path="/dashboard" 
-              element={user ? <DashboardPage /> : <Navigate to="/auth" replace />} 
+              element={user ? <DashboardPage onUnauthorized={handleLogout} /> : <Navigate to="/auth" replace />} 
             />
             
             <Route 
               path="/history" 
-              element={user ? <HistoryPage /> : <Navigate to="/auth" replace />} 
+              element={user ? <HistoryPage onUnauthorized={handleLogout} /> : <Navigate to="/auth" replace />} 
             />
             
             {/* Catch-all Redirect */}
