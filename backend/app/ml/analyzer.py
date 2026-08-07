@@ -12,15 +12,67 @@ backend_env = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
 if os.path.exists(backend_env):
     load_dotenv(backend_env)
 
+import requests
+from bs4 import BeautifulSoup
+from newspaper import Article, Config
+
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+
 def extract_article(url: str) -> tuple:
-    """Download and extract title and text from URL."""
+    """Download and extract title and text from URL with timeout and fallback."""
+    if not url or not url.strip().startswith(("http://", "https://")):
+        raise ValueError("Invalid URL format. Please provide a valid http:// or https:// link.")
+
+    url = url.strip()
+
+    # 1. Try newspaper3k with custom Config (browser user agent & strict timeout)
+    config = Config()
+    config.browser_user_agent = USER_AGENT
+    config.request_timeout = 8
+
     try:
-        article = Article(url)
+        article = Article(url, config=config)
         article.download()
         article.parse()
-        return article.title, article.text
-    except Exception as e:
-        raise ValueError(f"Failed to extract article from URL: {str(e)}")
+        if article.text and len(article.text.strip()) >= 150:
+            return article.title or "Analyzed Article", article.text.strip()
+    except Exception as ne:
+        print(f"Newspaper3k extraction note: {ne}")
+
+    # 2. Fallback to requests + BeautifulSoup
+    HEADERS = {
+        'User-Agent': USER_AGENT,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9'
+    }
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=8)
+        if resp.status_code == 404:
+            raise ValueError("The requested article URL returned a 404 Not Found error. Please check if the URL link is complete and valid.")
+        elif resp.status_code != 200:
+            raise ValueError(f"Server returned HTTP status code {resp.status_code} for the provided article link.")
+
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        
+        # Remove script, style, navigation, headers, and footers
+        for tag in soup(["script", "style", "nav", "header", "footer", "aside"]):
+            tag.decompose()
+
+        title = soup.title.string.strip() if soup.title and soup.title.string else "Analyzed Article"
+        
+        # Extract paragraph blocks
+        paragraphs = [p.get_text().strip() for p in soup.find_all('p') if len(p.get_text().strip()) > 30]
+        text = "\n\n".join(paragraphs)
+
+        if text and len(text.strip()) >= 150:
+            return title, text.strip()
+
+    except ValueError as ve:
+        raise ve
+    except Exception as req_err:
+        print(f"Requests extraction note: {req_err}")
+
+    raise ValueError("Could not extract readable article text from this URL. The link may be broken, incomplete, or anti-bot protected. Try pasting the text directly using the 'Analyze Raw Text' tab.")
 
 def analyze_article(url: Optional[str] = None, raw_text: Optional[str] = None) -> dict:
     """Core analysis orchestrator using Google Gemini API."""

@@ -40,14 +40,13 @@ export default function DashboardPage({ onUnauthorized }) {
           throw new Error('Your session has expired or is invalid. Please log in again to continue.');
         }
 
-        if (response.status === 502 || response.status === 503 || response.status === 504) {
-          throw new Error('Server timeout or unavailable. Please try again later.');
-        }
-        
         let errorData;
         try {
           errorData = await response.json();
         } catch {
+          if (response.status === 502 || response.status === 503 || response.status === 504) {
+            throw new Error('Server timeout or unavailable. Please try again later.');
+          }
           throw new Error(`Server error (${response.status}). Please try again later.`);
         }
         throw new Error(errorData.detail || 'Analysis failed. Please verify the URL or text input.');
