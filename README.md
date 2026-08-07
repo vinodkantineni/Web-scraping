@@ -1,108 +1,107 @@
-# AI-Powered Personalized News Digest & Bias Detection SaaS
+# BiasDigest: AI News Bias Detection & Debiasing System
+> Combat information overload, isolate media slants, and generate objective, fact-based news coverage instantly.
 
-A production-grade, end-to-end media analysis web application designed to help users combat information overload, isolate media slants, and generate objective coverage. Built using a modern React frontend and a FastAPI Python backend, complete with secure JWT user authentication, persistent database history, and single-container Docker deployment support.
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
+![Python](https://img.shields.io/badge/python-3.11+-blue?style=for-the-badge&logo=python&logoColor=white)
+![React](https://img.shields.io/badge/react-18-cyan?style=for-the-badge&logo=react)
 
----
+### 🟢 [Live Demo: Try it here!](https://news-bias-digest.onrender.com/)
 
-## Key Features
-1. **Interactive Dashboard**: Submit article URLs or paste raw text for analysis.
-2. **Political Bias Spectrum**: DisplaysLeft, Center, and Right leanings of articles using a side-by-side comparison chart.
-3. **Objective Summarization**: Condenses long articles into factual, bias-free summaries (approx. 100-150 words).
-4. **Neutral Debiasing**: Automatically rewrites the news content in a purely neutral tone.
-5. **Secure Authentication**: Register and log in securely to access personalized research dashboards.
-6. **Search & Analysis History**: Every processed article is automatically logged to a local SQLite database for future reference.
+## 📸 Visual Preview
+*(Replace the placeholder links below with the actual paths to your screenshots, e.g., `./screenshots/dashboard.png`)*
 
----
+### Analysis Input
+![Dashboard Input Placeholder](https://placehold.co/800x400/1a1a2e/ffffff?text=Dashboard+Input+Screenshot)
 
-## Tech Stack
-- **Frontend**: React (Vite), React Router, Lucide Icons, Chart.js, Vanilla CSS Glassmorphic theme.
-- **Backend**: FastAPI, SQLAlchemy (SQLite database), JWT (JSON Web Tokens), `newspaper3k` web scraper.
-- **AI Models**: Gemini API (`gemini-1.5-flash` model for 1-2s analysis) with an optional fallback to local Hugging Face BART models.
-- **Deployment**: Docker (Multi-stage build), Docker Compose.
+### Bias Detection Results & Chart
+![Analysis Results Placeholder](https://placehold.co/800x400/1a1a2e/ffffff?text=Analysis+Results+Screenshot)
 
----
+## ✨ Features
+* **Interactive Dashboard**: Paste an article URL or raw text to instantly analyze news content.
+* **Political Bias Spectrum**: Accurately classifies left, center, and right leanings using AI and visualizes it via dynamic charts.
+* **Objective Summarization**: Condenses long-winded articles into quick 100-130 word fact-based summaries.
+* **Neutral Debiasing Engine**: Automatically strips emotional language and political framing to rewrite the news in a purely neutral tone.
+* **Bias Reduction Metric**: Calculates the exact percentage of bias successfully removed from the original text.
+* **History Tracking**: Secure JWT authentication paired with a SQLite database automatically saves your past analyses.
 
-## Setup & Local Development
+## 🛠️ Tech Stack
+* **Frontend**: React (Vite), React Router, Lucide Icons, Chart.js, Glassmorphism CSS.
+* **Backend**: FastAPI, SQLAlchemy (SQLite), JWT Authentication, `newspaper3k`.
+* **AI Engine**: Google Gemini API (`gemini-1.5-flash`) for lightning-fast inference.
+* **Infrastructure**: Docker, Docker Compose (Deployable on 512MB Free Tiers).
 
-> [!IMPORTANT]
-> **Run commands from the project root directory** (i.e. `C:\projects\Web scraping`). Do not run virtual environment commands inside the `/backend` or `/frontend` subdirectories.
+## 🚀 Installation
 
 ### Prerequisites
-- Python 3.11 or 3.12 (highly recommended; avoid pre-release Python 3.14 to prevent dependency conflicts)
-- Node.js 18+
+* Python 3.11+
+* Node.js 18+
+* A [Google Gemini API Key](https://aistudio.google.com/)
 
-### Step 1: Environment Configuration
+### 1. Clone the repository
+```bash
+git clone https://github.com/YOUR_USERNAME/bias-digest.git
+cd bias-digest
+```
+
+### 2. Configure Environment Variables
 Create a `.env` file inside the `backend/` directory:
-- Path: [backend/.env](file:///c:/projects/Web%20scraping/backend/.env)
 ```env
-# Required for fast 1-2s Gemini Analysis (Recommended)
+# backend/.env
 GEMINI_API_KEY=your_gemini_api_key_here
-
-# JWT authentication configurations
 JWT_SECRET_KEY=generate_a_secure_random_string_here
 JWT_EXPIRE_MINUTES=1440
-
-# Database URL
 DATABASE_URL=sqlite:///./news_bias.db
 ```
 
-### Step 2: Install Dependencies
-Open your shell (e.g. PowerShell on Windows) in the project root folder and execute:
-
-1. **Backend Environment Setup**:
-   ```bash
-   # Create the virtual environment using Python 3.12
-   py -3.12 -m venv .venv
-
-   # Windows (PowerShell requires leading `.\` to run local scripts):
-   .\.venv\Scripts\pip install -r backend/requirements.txt
-
-   # macOS/Linux:
-   .venv/bin/pip install -r backend/requirements.txt
-   ```
-2. **Frontend Packages Setup**:
-   ```bash
-   cd frontend
-   npm install
-   cd ..
-   ```
-
-### Step 3: Run the Application
-Start both the FastAPI backend and Vite frontend concurrently by running the root launcher:
+### 3. Install Dependencies
 ```bash
-# Windows:
+# Setup Python Backend
+python -m venv .venv
+
+# Windows
+.\.venv\Scripts\pip install -r backend/requirements.txt
+# macOS/Linux
+.venv/bin/pip install -r backend/requirements.txt
+
+# Setup React Frontend
+cd frontend
+npm install
+cd ..
+```
+
+## 💻 Usage Examples
+
+### Running the App Locally
+Start both the FastAPI backend and Vite frontend concurrently using the root launcher script:
+
+```bash
+# Windows
 .\.venv\Scripts\python run.py
 
-# macOS/Linux:
+# macOS/Linux
 .venv/bin/python run.py
 ```
-This script runs:
-- **Frontend Web UI**: [http://localhost:5173](http://localhost:5173) (or 5174 if port 5173 is occupied)
-- **FastAPI Backend (Swagger API Docs)**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
----
+* **Web UI**: Access the dashboard at [http://localhost:5173](http://localhost:5173)
+* **API Docs**: Access the Swagger UI at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-## Deployment & Dockerization
-The project is containerized for production deployments. Please refer to [DEPLOY.md](file:///c:/projects/Web%20scraping/DEPLOY.md) for full step-by-step instructions on local Docker running, Render setup, and GCP Cloud Run setup.
-
----
-
-## Pushing to GitHub
-
-To push this project to your GitHub account, run the following commands in the root directory:
+### Running via Docker
+If you prefer to run the entire stack inside a container:
 ```bash
-# Stage all files
-git add .
-
-# Create initial commit
-git commit -m "Initial commit of end-to-end news bias digest SaaS"
-
-# Set branch name to main
-git branch -M main
-
-# Add your remote GitHub URL
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
-
-# Push to GitHub
-git push -u origin main
+docker-compose up --build -d
 ```
+
+## 🤝 Contributing Guide
+We welcome contributions to make BiasDigest even better! 
+1. Fork the repository.
+2. Create a new feature branch (`git checkout -b feature/amazing-feature`).
+3. Commit your changes (`git commit -m 'Add some amazing feature'`).
+4. Push to the branch (`git push origin feature/amazing-feature`).
+5. Open a Pull Request.
+
+*(See our [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) for more detailed guidelines if applicable).*
+
+## 📄 License
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more information.
