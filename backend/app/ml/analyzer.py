@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from typing import Optional
 from newspaper import Article
 import google.generativeai as genai
@@ -97,7 +98,16 @@ Article text:
         try:
             print(f"Analyzing with Gemini API model '{model_name}'...")
             model = genai.GenerativeModel(model_name)
-            response = model.generate_content(prompt)
+            # Try with JSON response_mime_type first
+            try:
+                response = model.generate_content(
+                    prompt,
+                    generation_config={"response_mime_type": "application/json"}
+                )
+            except Exception:
+                # Fallback to default generate_content
+                response = model.generate_content(prompt)
+
             if response and hasattr(response, "text") and response.text:
                 response_text = response.text.strip()
                 print(f"Successfully generated analysis using model '{model_name}'.")
@@ -110,19 +120,40 @@ Article text:
     if not response_text:
         raise ValueError(f"Failed to process analysis with Gemini: {str(last_error)}")
 
-    # Clean markdown formatting if present
-    if response_text.startswith("```json"):
-        response_text = response_text[7:]
-    elif response_text.startswith("```"):
-        response_text = response_text[3:]
-    if response_text.endswith("```"):
-        response_text = response_text[:-3]
-    response_text = response_text.strip()
+    # Extract and parse JSON safely
+    def parse_json_from_gemini(raw_text: str) -> dict:
+        if not raw_text:
+            raise ValueError("Received empty response text from Gemini API.")
+        
+        t = raw_text.strip()
+        # 1. Try direct parse
+        try:
+            return json.loads(t)
+        except Exception:
+            pass
 
-    try:
-        data = json.loads(response_text)
-    except Exception as parse_err:
-        raise ValueError(f"Failed to parse JSON output from Gemini API: {str(parse_err)}")
+        # 2. Extract substring between first '{' and last '}'
+        start_idx = t.find('{')
+        end_idx = t.rfind('}')
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            try:
+                return json.loads(t[start_idx:end_idx + 1])
+            except Exception:
+                pass
+
+        # 3. Strip codeblock markers ```json ... ```
+        cleaned = t
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+        if cleaned.endswith("```"):
+            cleaned = re.sub(r"\s*```$", "", cleaned)
+
+        try:
+            return json.loads(cleaned.strip())
+        except Exception as parse_err:
+            raise ValueError(f"Failed to parse JSON output from Gemini API: {str(parse_err)}")
+
+    data = parse_json_from_gemini(response_text)
 
 
     original_left = data["original_bias"]["left"]
