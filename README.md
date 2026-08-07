@@ -10,7 +10,8 @@
 ### 🟢 [Live Demo: Try it here!](https://news-bias-digest.onrender.com/)
 
 ## 📸 Visual Preview
-*(Replace the placeholder links below with the actual paths to your screenshots, e.g., `./screenshots/dashboard.png`)*
+<img width="1919" height="900" alt="image" src="https://github.com/user-attachments/assets/a160f09f-2b9e-4654-beae-a177d88b6332" />
+
 
 ### Analysis Input
 ![Dashboard Input Placeholder](https://placehold.co/800x400/1a1a2e/ffffff?text=Dashboard+Input+Screenshot)
